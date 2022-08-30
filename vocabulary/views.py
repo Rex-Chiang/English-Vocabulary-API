@@ -13,6 +13,7 @@ class VocabularyView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         vocabulary = Vocabulary.objects.filter(english_word=self.request.GET.get("english_word"))
+
         if vocabulary:
             return vocabulary
         else:
@@ -29,6 +30,7 @@ class VocabularyView(viewsets.ModelViewSet):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
+                logger.error(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as exception_message:
