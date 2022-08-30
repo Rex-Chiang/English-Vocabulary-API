@@ -4,4 +4,4 @@ from rest_framework import serializers
 class VocabularySerializer(serializers.ModelSerializer):
     class Meta:
         model = Vocabulary
-        fields = ["english_word", "chinese_word"]
+        fields = ["english_word", "chinese_word", "example"]
