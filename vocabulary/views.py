@@ -1,5 +1,7 @@
+import random
 import logging
 from django.conf import settings
+from django.db.models import Max
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from vocabulary.models import Vocabulary
@@ -12,12 +14,13 @@ class VocabularyView(viewsets.ModelViewSet):
     serializer_class = VocabularySerializer
 
     def get_queryset(self):
-        vocabulary = Vocabulary.objects.filter(english_word=self.request.GET.get("english_word"))
+        max_id = Vocabulary.objects.aggregate(max_id=Max("id"))["max_id"]
+        while True:
+            pk = random.randint(1, max_id)
+            vocabulary = Vocabulary.objects.filter(pk=pk)
 
-        if vocabulary:
-            return vocabulary
-        else:
-            return None
+            if vocabulary:
+                return vocabulary
 
     def create(self, request, *args, **kwargs):
         try:
