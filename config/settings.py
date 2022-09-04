@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-e%rj+055zha8=o(8609u(pu(y7yshel#np$(0=hl^s716l=qe6'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0", "english-vocabulary-api.fly.dev"]
 
