@@ -1,7 +1,7 @@
-import random
 import logging
+from random import randint
 from django.conf import settings
-from django.db.models import Max
+from django.db.models import Count
 from rest_framework import status, viewsets
 from rest_framework.response import Response
 from vocabulary.models import Vocabulary
@@ -12,38 +12,33 @@ logger = logging.getLogger(settings.LOG_VERSION)
 class VocabularyView(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "delete"]
     serializer_class = VocabularySerializer
-    lookup_url_kwarg = "english_word"
+    lookup_url_kwarg = "en_word"
 
     def get_queryset(self):
-        max_id = Vocabulary.objects.aggregate(max_id=Max("id"))["max_id"]
+        try:
+            row_count = Vocabulary.objects.aggregate(count=Count("id"))["count"]
 
-        if not max_id:
-            return {}
+            if not row_count:
+                return {}
+            else:
+                random_index = randint(0, row_count - 1)
+                vocabulary = Vocabulary.objects.all()[random_index]
+                return [vocabulary]
 
-        while True:
-            pk = random.randint(1, max_id)
-            vocabulary = Vocabulary.objects.filter(pk=pk)
-
-            if vocabulary:
-                return vocabulary
+        except Exception as exception_message:
+            logger.exception(exception_message)
+            return Response({"message": exception_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def create(self, request, *args, **kwargs):
         try:
-            english_word = request.data.get("english_word")
-            vocabulary = Vocabulary.objects.filter(english_word=english_word)
+            en_word = request.data.get("en_word")
+            vocabulary = Vocabulary.objects.filter(en_word=en_word).first()
 
-            if vocabulary.exists():
-                logger.info(f"{english_word} is exist.")
-                serializer = VocabularySerializer(vocabulary.first(), data=request.data)
-
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
-                else:
-                    logger.error(serializer.errors)
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-            serializer = VocabularySerializer(data=request.data)
+            if vocabulary:
+                logger.info(f"{en_word} is exist.")
+                serializer = VocabularySerializer(vocabulary, data=request.data)
+            else:
+                serializer = VocabularySerializer(data=request.data)
 
             if serializer.is_valid():
                 serializer.save()
@@ -56,8 +51,8 @@ class VocabularyView(viewsets.ModelViewSet):
             logger.exception(exception_message)
             return Response({"message": exception_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def destroy(self, request, english_word=None):
-        instance = Vocabulary.objects.filter(english_word=english_word)
-        self.perform_destroy(instance)
+    def destroy(self, request, en_word=None):
+        vocabulary = Vocabulary.objects.filter(en_word=en_word)
+        self.perform_destroy(vocabulary)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
