@@ -4,6 +4,18 @@
 Users can use RESTful API to upload english vocabulary and example that they need to review, and retrieve the vocabulary in random mode.\
 This project was deployed on **Fly.io (https://fly.io)**
 
+## Developing
+- Back-End
+  - Python3
+  - Django
+  - Django Rest Framwork
+  - Asyncio
+- Database
+  - SQLite
+- Deployment
+  - Docker
+  - Fly.io
+  
 ## Quick start
 - Clone this repository
 ```
