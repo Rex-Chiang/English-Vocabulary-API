@@ -1,7 +1,8 @@
 # English-Vocabulary-API
 
 ## Overview
-Users can use RESTful API to upload english vocabulary and example that they need to review, and retrieve the vocabulary in random mode.\
+Users can use RESTful API to upload english vocabulary and example that they need to review, and retrieve the vocabulary in random mode.
+
 This project was deployed on **Fly.io (https://fly.io)**
 
 ## Developing
